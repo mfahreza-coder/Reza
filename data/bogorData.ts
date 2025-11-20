@@ -5,8 +5,8 @@ export const BOGOR_DATA: Kecamatan[] = [
   {
     id: 'bogor-tengah',
     name: 'Bogor Tengah',
-    // Central polygon
-    path: "M270,240 L350,240 L360,320 L260,330 Z",
+    // Central polygon - Adjusted left border to close gap with TS/Barat (added 265,285)
+    path: "M270,240 L350,240 L360,320 L260,330 L265,285 Z",
     transform: "translate(0, 0)",
     textPosition: { x: "310", y: "290" },
     colorClass: "fill-green-500 group-hover:fill-green-400",
@@ -24,6 +24,8 @@ export const BOGOR_DATA: Kecamatan[] = [
               'https://placehold.co/600x400/059669/ffffff?text=Istana+Bogor',
               'https://placehold.co/600x400/047857/ffffff?text=Danau+Gunting'
             ], 
+            address: 'Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+            mapUrl: 'https://maps.app.goo.gl/bogor',
             contact: { phone: '0251-8311362' } 
           },
           { 
@@ -121,7 +123,7 @@ export const BOGOR_DATA: Kecamatan[] = [
   {
     id: 'bogor-timur',
     name: 'Bogor Timur',
-    // East polygon - Adjusted bottom-left to match new South border (410,420)
+    // East polygon
     path: "M350,240 L420,260 L520,360 L410,420 L360,320 Z",
     transform: "translate(0, 0)",
     textPosition: { x: "415", y: "330" },
@@ -207,7 +209,7 @@ export const BOGOR_DATA: Kecamatan[] = [
   {
     id: 'bogor-selatan',
     name: 'Bogor Selatan',
-    // South polygon - Expanded to be more accurate (Wider and deeper south)
+    // South polygon - Updated accurate shape
     path: "M360,320 L410,420 L300,550 L150,420 L260,330 Z",
     transform: "translate(0, 0)",
     textPosition: { x: "280", y: "440" },
@@ -277,8 +279,8 @@ export const BOGOR_DATA: Kecamatan[] = [
   {
     id: 'bogor-barat',
     name: 'Bogor Barat',
-    // West polygon - Adjusted right edge to match new South border (150,420)
-    path: "M260,330 L150,420 L60,340 L130,260 Z",
+    // West polygon - Updated to share border with TS (at 130,260 -> 265,285) and Tengah (260,330 -> 265,285)
+    path: "M260,330 L150,420 L60,340 L130,260 L265,285 Z",
     transform: "translate(0, 0)",
     textPosition: { x: "140", y: "350" },
     colorClass: "fill-yellow-400 group-hover:fill-yellow-300",
@@ -397,8 +399,8 @@ export const BOGOR_DATA: Kecamatan[] = [
   {
     id: 'tanah-sareal',
     name: 'Tanah Sareal',
-    // North West polygon
-    path: "M270,240 L260,100 L150,120 L130,260 Z",
+    // North West polygon - Updated to close gap with Barat and Tengah (added 265,285)
+    path: "M270,240 L260,100 L150,120 L130,260 L265,285 Z",
     transform: "translate(0, 0)",
     textPosition: { x: "200", y: "200" },
     colorClass: "fill-purple-600 group-hover:fill-purple-500",

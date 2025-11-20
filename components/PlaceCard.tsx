@@ -121,8 +121,28 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, isAdminMode, onEdit, onDel
         </div>
         <p className="text-gray-600 text-sm flex-grow">{place.description}</p>
         
+        {/* Address and Map Link Section */}
+        {(place.address || place.mapUrl) && (
+          <div className="mt-3 pt-3 border-t border-gray-100 flex items-start text-sm text-gray-600">
+             <MapPinIcon className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-emerald-600" />
+             <div className="flex-grow">
+                {place.address && <p className="line-clamp-2 mb-1">{place.address}</p>}
+                {place.mapUrl && (
+                    <a 
+                        href={place.mapUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 hover:underline text-xs font-semibold inline-flex items-center"
+                    >
+                        Lihat di Google Maps &rarr;
+                    </a>
+                )}
+             </div>
+          </div>
+        )}
+        
         {place.contact && (place.contact.phone || place.contact.socialMedia) && (
-          <div className="mt-4 pt-4 border-t border-gray-200 flex items-center space-x-4 text-sm">
+          <div className="mt-4 pt-3 border-t border-gray-200 flex items-center space-x-4 text-sm">
             {place.contact.phone && (
               <a href={`tel:${place.contact.phone}`} className="flex items-center text-gray-600 hover:text-emerald-600 transition-colors">
                 <PhoneIcon className="w-4 h-4 mr-1.5" />

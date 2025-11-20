@@ -7,6 +7,8 @@ export interface Place {
   type: PlaceType;
   description: string;
   images: string[];
+  address?: string; // New field for physical address
+  mapUrl?: string;  // New field for Google Maps link
   contact?: {
     phone?: string;
     socialMedia?: string;

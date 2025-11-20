@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrashIcon } from './icons/TrashIcon';
 
 interface ModalProps {
@@ -136,6 +136,9 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
             if (!finalValues.contact.socialMedia?.trim()) delete finalValues.contact.socialMedia;
             if (Object.keys(finalValues.contact).length === 0) delete finalValues.contact;
         }
+        // Ensure optional strings are empty strings rather than undefined/null if user cleared them
+        if (!finalValues.address) finalValues.address = '';
+        if (!finalValues.mapUrl) finalValues.mapUrl = '';
     }
 
     onSave(finalValues);
@@ -153,14 +156,20 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          <div className="p-6 border-b shrink-0">
-            <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col max-h-[90dvh]" onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 h-full">
+          
+          {/* Header */}
+          <div className="p-5 border-b border-gray-100 shrink-0 flex justify-between items-center bg-white rounded-t-xl">
+            <h3 className="text-lg font-bold text-gray-800">{title}</h3>
+            <button type="button" onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors" aria-label="Tutup">
+                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
           </div>
           
-          <div className="p-6 space-y-4 overflow-y-auto flex-grow">
+          {/* Body - Scrollable */}
+          <div className="p-5 space-y-5 overflow-y-auto flex-grow">
             {config.type === 'kelurahan' && (
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nama Kelurahan</label>
@@ -202,7 +211,6 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
 
             {config.type === 'district-config' && (
                 <div className="space-y-5">
-                     {/* ... existing district config inputs (no changes needed here specifically for images, but keeping structure) ... */}
                      <div className="bg-emerald-50 p-3 rounded border border-emerald-100">
                         <h4 className="text-sm font-bold text-emerald-800 mb-2 uppercase tracking-wide">1. Identitas & Tampilan</h4>
                         <div className="space-y-3">
@@ -219,7 +227,6 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
                             </div>
                         </div>
                     </div>
-                    {/* ... abbreviated for brevity, assume other district inputs remain ... */}
                      <div className="bg-blue-50 p-3 rounded border border-blue-100">
                         <h4 className="text-sm font-bold text-blue-800 mb-2 uppercase tracking-wide">2. Posisi Label Nama</h4>
                         <div className="grid grid-cols-2 gap-3">
@@ -292,19 +299,25 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
                         </label>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         <input 
                             type="text" 
                             value={tempImageUrl}
                             onChange={(e) => setTempImageUrl(e.target.value)}
-                            placeholder="Atau paste URL gambar..." 
-                            className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-xs"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    addImageUrl();
+                                }
+                            }}
+                            placeholder="URL gambar (Paste lalu Enter)..." 
+                            className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500"
                         />
                         <button 
                             type="button" 
                             onClick={addImageUrl}
                             disabled={!tempImageUrl}
-                            className="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-300 disabled:opacity-50"
+                            className="px-4 py-2 bg-emerald-600 text-white rounded-md text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500 transition-colors shadow-sm"
                         >
                             Tambah
                         </button>
@@ -319,20 +332,38 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, config }) =>
                   <textarea name="description" id="description" value={values.description || ''} onChange={handleChange} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required></textarea>
                 </div>
 
-                <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telepon (Opsional)</label>
-                    <input type="tel" name="phone" id="phone" value={values.contact?.phone || ''} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                {/* Location Section */}
+                <div className="bg-gray-50 p-3 rounded border border-gray-200 space-y-3">
+                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lokasi</h4>
+                    <div>
+                      <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
+                      <textarea name="address" id="address" value={values.address || ''} onChange={handleChange} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 text-sm" placeholder="Jl. Contoh No. 123, Bogor"></textarea>
+                    </div>
+                    <div>
+                      <label htmlFor="mapUrl" className="block text-sm font-medium text-gray-700 mb-1">Link Google Maps</label>
+                      <input type="url" name="mapUrl" id="mapUrl" value={values.mapUrl || ''} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 text-sm" placeholder="https://maps.app.goo.gl/..." />
+                    </div>
                 </div>
-                <div>
-                    <label htmlFor="socialMedia" className="block text-sm font-medium text-gray-700 mb-1">Sosial Media (Opsional)</label>
-                    <input type="url" name="socialMedia" id="socialMedia" value={values.contact?.socialMedia || ''} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telepon (Opsional)</label>
+                        <input type="tel" name="phone" id="phone" value={values.contact?.phone || ''} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                    </div>
+                    <div>
+                        <label htmlFor="socialMedia" className="block text-sm font-medium text-gray-700 mb-1">Sosial Media (Opsional)</label>
+                        <input type="url" name="socialMedia" id="socialMedia" value={values.contact?.socialMedia || ''} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                    </div>
                 </div>
               </>
             )}
           </div>
-          <div className="p-4 bg-gray-50 flex justify-end space-x-3 rounded-b-lg border-t border-gray-200 shrink-0">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm">Batal</button>
-            <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 text-sm font-medium">Simpan</button>
+          
+          {/* Footer - Always Visible */}
+          <div className="p-4 bg-white border-t border-gray-100 shrink-0 flex flex-col gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+            <button type="submit" className="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-base shadow-md active:scale-95 transition-all flex justify-center items-center">
+                Simpan & Selesai
+            </button>
           </div>
         </form>
       </div>
