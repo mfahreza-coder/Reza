@@ -1,0 +1,5 @@
+{
+  "name": "SindangBogor.com",
+  "description": "A web application to explore coffee shops and tourist attractions in Bogor, structured by sub-districts (kecamatan) and urban villages (kelurahan), similar to the Dapodik data portal.",
+  "requestFramePermissions": []
+}
